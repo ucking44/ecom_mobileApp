@@ -83,8 +83,7 @@ class ProductController extends Controller
         $data['user_id'] = $request->user_id;
         $data['category_id'] = $request->category_id;
         $data['manufacture_id'] = $request->manufacture_id;
-        $data['product_short_description'] = $request->product_short_description;
-        $data['product_long_description'] = $request->product_long_description;
+        $data['product_description'] = $request->product_description;
         $data['product_price'] = $request->product_price;
         $data['product_size'] = $request->product_size;
         $data['product_color'] = $request->product_color;
@@ -128,8 +127,7 @@ class ProductController extends Controller
         $data['user_id'] = $request->user_id;
         $data['category_id'] = $request->category_id;
         $data['manufacture_id'] = $request->manufacture_id;
-        $data['product_short_description'] = $request->product_short_description;
-        $data['product_long_description'] = $request->product_long_description;
+        $data['product_description'] = $request->product_description;
         $data['product_price'] = $request->product_price;
         $data['product_size'] = $request->product_size;
         $data['product_color'] = $request->product_color;
