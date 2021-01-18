@@ -19,10 +19,14 @@ class HomeController extends Controller
                    ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
                    ->where('products.publication_status', 1)
                    ->limit(9)
+                   //->paginate(2);
                    ->get();
-        return view('pages.home_content', compact('all_published_product'));
 
-        //return view('pages.home_content');
+        return response()->json([
+            'success' => true,
+            'data' => $all_published_product
+        ], 200);
+
     }
 
     public function show_product_by_category($category_id)
@@ -34,8 +38,13 @@ class HomeController extends Controller
                    ->where('category.category_id', $category_id)
                    ->where('products.publication_status', 1)
                    ->limit(10)
+                   //->paginate(2);
                    ->get();
-        return view('pages.category_by_products', compact('product_by_category'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $product_by_category
+        ], 200);
 
     }
 
@@ -49,7 +58,11 @@ class HomeController extends Controller
                    ->where('products.publication_status', 1)
                    ->limit(18)
                    ->get();
-        return view('pages.manufacture_by_products', compact('product_by_manufacture'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $product_by_manufacture,
+        ], 200);
 
     }
 
@@ -64,7 +77,11 @@ class HomeController extends Controller
                    ->first();
                    //->limit(18)
                    //->get();
-        return view('pages.product_details', compact('product_by_details'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $product_by_details,
+        ], 200);
 
     }
 

@@ -76,12 +76,12 @@ Route::get('/active_manufacture/{id}', 'ManufactureController@active_manufacture
 
 
 ///////////////////////////     PRODUCT ROUTE  /////////////////////////
-Route::get('/add-product', 'ProductController@index');
-Route::post('/save-product', 'ProductController@save_product');
-Route::get('/all-product', 'ProductController@all_product');
-Route::get('/delete-product/{id}', 'ProductController@delete_product');
-Route::get('/unactive_product/{product_id}', 'ProductController@unactive_product');
-Route::get('/active_product/{product_id}', 'ProductController@active_product');
+Route::get('/add-product', 'ProductsController@index');
+Route::post('/save-product', 'ProductsController@save_product');
+Route::get('/all-product', 'ProductsController@all_product');
+Route::get('/delete-product/{id}', 'ProductsController@delete_product');
+Route::get('/unactive_product/{product_id}', 'ProductsController@unactive_product');
+Route::get('/active_product/{product_id}', 'ProductsController@active_product');
 
 
 ////////////////////////////    SLIDER ROUTE   ////////////////////////

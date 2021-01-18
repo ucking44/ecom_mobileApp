@@ -18,6 +18,11 @@ return [
         'passwords' => 'users',
     ],
 
+    // 'defaults' => [
+    //     'guard' => 'api',
+    //     'passwords' => 'users',
+    // ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
@@ -46,6 +51,13 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        // 'api' => [
+        //     'driver' => 'jwt',
+        //     'provider' => 'users',
+        //     'hash' => true,
+        // ],
+
     ],
 
     /*

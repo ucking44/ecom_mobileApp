@@ -15,9 +15,10 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('product_id');
-            $table->string('product_name');
+            $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('category_id');
             $table->bigInteger('manufacture_id');
+            $table->string('product_name');
             $table->longText('product_short_description');
             $table->longText('product_long_description');
             $table->float('product_price');
@@ -26,6 +27,12 @@ class CreateProductsTable extends Migration
             $table->string('product_color');
             $table->bigInteger('publication_status');
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('user_id')
+                ->on('users')
+                ->onDelete('cascade');
+
         });
     }
 

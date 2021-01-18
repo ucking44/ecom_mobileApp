@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
+use JWTAuth;
+//use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -11,25 +14,73 @@ session_start();
 
 class ProductController extends Controller
 {
-    public function index()
+    protected $user;
+
+    /**
+     * The attributes that is for user authentication
+     *
+     *
+     */
+    // public function __construct()
+    // {
+    //     $this->user = JWTAuth::parseToken()->authenticate();
+    // }
+
+    public function __construct()
     {
-        return view('admin.add_product');
+        $this->middleware('auth.role:admin');
+        //$this->middleware('auth.role:admin', ['except' => ['index']]);
     }
 
-    public function all_product()
+    /**
+     * The attributes that is for all products
+     *
+     *
+     */
+
+
+    public function index()
     {
-        $all_product_info = DB::table('products')
+        return $this->user = DB::table('products')
                    ->join('category', 'products.category_id', '=', 'category.category_id')
                    ->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
                    ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
-                   ->get();
-        return view('admin.all_product', compact('all_product_info'));
+                   ->paginate(4);
+                   //->toArray();
+                   //->get();
+
     }
+
+    // public function index()
+    // {
+    //     $products = Product::with('user:id,name')
+    //         ->withCount('reviews')
+    //         ->latest()
+    //         ->paginate(20);
+    //     return response()->json(['products' => $products]);
+    // }
+
+    public function show($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        return response()->json($product, 200);
+
+    }
+
+    // public function show(Product $product)
+    // {
+    //     $product->load(['reviews' => function ($query) {
+    //         $query->latest();
+    //     }, 'user']);
+    //     return response()->json(['product' => $product]);
+    // }
+
 
     public function save_product(Request $request)
     {
         $data = array();
         $data['product_name'] = $request->product_name;
+        $data['user_id'] = $request->user_id;
         $data['category_id'] = $request->category_id;
         $data['manufacture_id'] = $request->manufacture_id;
         $data['product_short_description'] = $request->product_short_description;
@@ -50,44 +101,100 @@ class ProductController extends Controller
             if ($success) {
                 $data['product_image'] = $image_url;
 
-                DB::table('products')->insert($data);
-                Session::put('message', 'Product Added Successfully!!');
-                return Redirect::to('/add-product');
+                $dataP = DB::table('products')->insert($data);
+                return response()->json([
+                    'success' => $dataP,
+                    'product' => 'Product added successfully!',
+                ], 201);
+
             }
         }
+
         $data['product_image'] = '';
 
-            DB::table('products')->insert($data);
-                Session::put('message', 'Product Added Successfully Without Image!!');
-                return Redirect::to('/add-product');
+        $dataP = DB::table('products')->insert($data);
+        return response()->json([
+            'success' => $dataP,
+            'product' => 'Product added successfully!',
+            'message' => 'Image could not be added',
+        ], 201);
+
+    }
+
+    public function update_product(Request $request, $product_id)
+    {
+        $data = array();
+        $data['product_name'] = $request->product_name;
+        $data['user_id'] = $request->user_id;
+        $data['category_id'] = $request->category_id;
+        $data['manufacture_id'] = $request->manufacture_id;
+        $data['product_short_description'] = $request->product_short_description;
+        $data['product_long_description'] = $request->product_long_description;
+        $data['product_price'] = $request->product_price;
+        $data['product_size'] = $request->product_size;
+        $data['product_color'] = $request->product_color;
+        $data['publication_status'] = $request->publication_status;
+
+        $updateP = Product::findOrFail($product_id);
+        $updateP->update($data);
+
+        return response([
+            'success' => $updateP,
+            'message' => 'Product Updated Successfully !!',
+        ]);
+
     }
 
     public function delete_product($product_id)
     {
-        DB::table('products')
-            ->where('product_id', $product_id)
-            ->delete();
+        $deleteP = Product::findOrFail($product_id);
+        $deleteP->delete();
 
-        Session::get('message', 'Product Deleted successfully !!');
-        return Redirect::to('/all-product');
+        return response()->json(null, 204);
+
+        // return response([
+        //     'success' => true,
+        //     'product' => 'Product Deleted Successfully!',
+        // ]);
+
     }
 
     public function unactive_product($product_id)
     {
-        DB::table('products')
+        $unactive_product = DB::table('products')
             ->where('product_id', $product_id)
             ->update(['publication_status' => 0 ]);
-        Session::put('message', 'Product Unactivated successfully !!');
-        return Redirect::to('/all-product');
+
+        return response([
+            'success' => $unactive_product,
+            'product' => 'Product Unactivated Successfully!',
+        ]);
+
     }
 
     public function active_product($product_id)
     {
-        DB::table('products')
+        $active_product = DB::table('products')
             ->where('product_id', $product_id)
             ->update(['publication_status' => 1 ]);
-        Session::put('message', 'Product Activated successfully !!');
-        return Redirect::to('/all-product');
+
+        return response([
+            'success' => $active_product,
+            'product' => 'Product Unactivated Successfully!',
+        ]);
+
     }
 
+    public function search($product_name)
+    {
+        // $search = DB::table('products')
+        //         ->where("product_name", "like", "%" . $product_name . "%")
+        //         ->get();
+
+        $search = Product::where("product_name", "like", "%" . $product_name . "%")
+                    ->get();
+        return $search;
+    }
 }
+
+

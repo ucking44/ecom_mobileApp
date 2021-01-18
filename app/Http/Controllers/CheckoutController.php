@@ -28,9 +28,14 @@ class CheckoutController extends Controller
         $customer_id = DB::table('customer')
                        ->insertGetId($data);
 
-                Session::put('customer_id', $customer_id);
-                Session::put('customer_name', $request->customer_name);
-                return Redirect('/checkout');
+        return response()->json([
+            'success' => true,
+            'customer' => $customer_id,
+        ], 201);
+
+                // Session::put('customer_id', $customer_id);
+                // Session::put('customer_name', $request->customer_name);
+                // return Redirect('/checkout');
     }
 
     public function checkout()
@@ -56,8 +61,14 @@ class CheckoutController extends Controller
 
         $shipping_id = DB::table('shipping')
                        ->insertGetId($data);
-            Session::put('shipping_id', $shipping_id);
-            return Redirect::to('/payment');
+
+        return response()->json([
+            'success' => true,
+            'shipping' => $shipping_id,
+        ]);
+
+            // Session::put('shipping_id', $shipping_id);
+            // return Redirect::to('/payment');
     }
 
     public function customer_login(Request $request)
@@ -80,7 +91,7 @@ class CheckoutController extends Controller
 
     public function payment()
     {
-        return view('pages.payment');
+        return "This is payment page";
     }
 
     public function order_place(Request $request)
@@ -92,7 +103,7 @@ class CheckoutController extends Controller
         $paymentData['payment_status'] = 'pending';
         $payment_id = DB::table('payment')
                       ->insertGetId($paymentData);
-        
+
         $orderData = array();
         $orderData['customer_id'] = Session::get('customer_id');
         $orderData['shipping_id'] = Session::get('shipping_id');
@@ -144,7 +155,11 @@ class CheckoutController extends Controller
                    ->select('order.*', 'customer.customer_name')
                    ->get();
 
-        return view('admin.manage_order', compact('all_order_info'));
+        return response()->json([
+            'success' => true,
+            'order' => $all_order_info,
+        ]);
+
     }
 
     public function view_order($order_id)
@@ -156,7 +171,11 @@ class CheckoutController extends Controller
                    ->select('order.*', 'order_details.*', 'shipping.*', 'customer.*')
                    ->get();
 
-        return view('admin.view_order', compact('order_by_id'));
+        return response()->json([
+            'success' => true,
+            'viewOrder' => $order_by_id,
+        ]);
+                   
     }
 
     public function customer_logout()
