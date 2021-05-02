@@ -3,18 +3,30 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Product;
 
 class Category extends Model
 {
-    protected $table = 'category';
+    protected $table = 'categories';
 
     protected $primaryKey = 'category_id';
 
     protected $fillable = [
         'category_name',
         'category_description',
-        //'publication_status',
+        'status',
     ];
 
     public $timestamps = true;
+
+    // public function products()
+    // {
+    //     return $this->hasMany(Product::class);
+    // }
+
+    public function product()
+    {
+        return $this->hasOne(Product::class);
+    }
+
 }

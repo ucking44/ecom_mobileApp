@@ -13,11 +13,11 @@ class CreateCategoryTable extends Migration
      */
     public function up()
     {
-        Schema::create('category', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('category_id');
             $table->string('category_name');
             $table->longText('category_description');
-            $table->bigInteger('publication_status');
+            $table->string('status')->default('disable');
             $table->timestamps();
         });
     }

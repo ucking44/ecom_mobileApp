@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Carbon;
 use App\Http\Requests;
-use Session;
+//use Session;
 use Cart;
+
 session_start();
 
 class CheckoutController extends Controller
@@ -24,18 +27,15 @@ class CheckoutController extends Controller
         $data['customer_email'] = $request->customer_email;
         $data['password'] = md5($request->password);
         $data['mobile_number'] = $request->mobile_number;
+        $data['created_at'] = Carbon::now(); //->toDateString();
+        $data['updated_at'] = Carbon::now(); //->toDateString();
 
         $customer_id = DB::table('customer')
                        ->insertGetId($data);
 
-        return response()->json([
-            'success' => true,
-            'customer' => $customer_id,
-        ], 201);
-
-                // Session::put('customer_id', $customer_id);
-                // Session::put('customer_name', $request->customer_name);
-                // return Redirect('/checkout');
+                Session::put('customer_id', $customer_id);
+                Session::put('customer_name', $request->customer_name);
+                return Redirect('/checkout');
     }
 
     public function checkout()
@@ -43,7 +43,6 @@ class CheckoutController extends Controller
         // $all_published_category = DB::table('category')
         //                           ->where('publication_status', 1)
         //                           ->get();
-
         // return view('pages.checkout', compact('all_published_category'));
 
         return view('pages.checkout');
@@ -58,17 +57,13 @@ class CheckoutController extends Controller
         $data['shipping_address'] = $request->shipping_address;
         $data['shipping_mobile_number'] = $request->shipping_mobile_number;
         $data['shipping_city'] = $request->shipping_city;
+        $data['created_at'] = Carbon::now(); //->toDateString();
+        $data['updated_at'] = Carbon::now(); //->toDateString();
 
         $shipping_id = DB::table('shipping')
                        ->insertGetId($data);
-
-        return response()->json([
-            'success' => true,
-            'shipping' => $shipping_id,
-        ]);
-
-            // Session::put('shipping_id', $shipping_id);
-            // return Redirect::to('/payment');
+            Session::put('shipping_id', $shipping_id);
+            return Redirect::to('/payment');
     }
 
     public function customer_login(Request $request)
@@ -81,7 +76,8 @@ class CheckoutController extends Controller
                   ->first();
 
             if ($result) {
-                Session::put('customer_id', $result->customer_id);
+                //Session::put('customer_id', $result->customer_id);
+                Session::put('customer_name', $result->customer_name);
                 return Redirect::to('/checkout');
             }
             else {
@@ -91,7 +87,7 @@ class CheckoutController extends Controller
 
     public function payment()
     {
-        return "This is payment page";
+        return view('pages.payment');
     }
 
     public function order_place(Request $request)
@@ -101,6 +97,8 @@ class CheckoutController extends Controller
         $paymentData = array();
         $paymentData['payment_method'] = $payment_gateway;
         $paymentData['payment_status'] = 'pending';
+        $paymentData['created_at'] = Carbon::now(); //->toDateString();
+        $paymentData['updated_at'] = Carbon::now(); //->toDateString();
         $payment_id = DB::table('payment')
                       ->insertGetId($paymentData);
 
@@ -110,6 +108,8 @@ class CheckoutController extends Controller
         $orderData['payment_id'] = $payment_id;
         $orderData['order_total'] = Cart::total();
         $orderData['order_status'] = 'pending';
+        $orderData['created_at'] = Carbon::now(); //->toDateString();
+        $orderData['updated_at'] = Carbon::now(); //->toDateString();
         $order_id = DB::table('order')
                     ->insertGetId($orderData);
 
@@ -123,6 +123,8 @@ class CheckoutController extends Controller
             $odData['product_name'] = $v_content->name;
             $odData['product_price'] = $v_content->price;
             $odData['product_sales_quantity'] = $v_content->qty;
+            $odData['created_at'] = Carbon::now(); //->toDateString();
+            $odData['updated_at'] = Carbon::now(); //->toDateString();
 
             DB::table('order_details')
                 ->insert($odData);
@@ -155,11 +157,7 @@ class CheckoutController extends Controller
                    ->select('order.*', 'customer.customer_name')
                    ->get();
 
-        return response()->json([
-            'success' => true,
-            'order' => $all_order_info,
-        ]);
-
+        return view('admin.manage_order', compact('all_order_info'));
     }
 
     public function view_order($order_id)
@@ -171,11 +169,7 @@ class CheckoutController extends Controller
                    ->select('order.*', 'order_details.*', 'shipping.*', 'customer.*')
                    ->get();
 
-        return response()->json([
-            'success' => true,
-            'viewOrder' => $order_by_id,
-        ]);
-                   
+        return view('admin.view_order', compact('order_by_id'));
     }
 
     public function customer_logout()
@@ -188,6 +182,4 @@ class CheckoutController extends Controller
     // {
 
     // }
-
 }
-

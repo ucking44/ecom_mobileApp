@@ -22,7 +22,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'phone', 'email', 'password',
     ];
 
     /**
@@ -30,10 +30,10 @@ class User extends Authenticatable implements JWTSubject
      *
      *
      */
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
+    // public function products()
+    // {
+    //     return $this->hasMany(Product::class);
+    // }
 
     /**
      * Get the products the user has added.

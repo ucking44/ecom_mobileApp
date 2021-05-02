@@ -2,87 +2,113 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
+use App\Review;
+use App\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
 //use Illuminate\Support\Facades\Redirect;
 //use App\Http\Requests;
-use Session;
-//session_start();
+//use Session;
+session_start();
 
 class HomeController extends Controller
 {
     public function index()
     {
         $all_published_product = DB::table('products')
-                   ->join('category', 'products.category_id', '=', 'category.category_id')
-                   ->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
-                   ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
-                   ->where('products.publication_status', 1)
+                   ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                   ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                   ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
+                   ->where('products.status', 'enable')
                    ->limit(9)
-                   //->paginate(2);
                    ->get();
+        return view('pages.home_content', compact('all_published_product'));
 
-        return response()->json([
-            'success' => true,
-            'data' => $all_published_product
-        ], 200);
-
+        //return view('pages.home_content');
     }
 
     public function show_product_by_category($category_id)
     {
         $product_by_category = DB::table('products')
-                   ->join('category', 'products.category_id', '=', 'category.category_id')
+                   ->join('categories', 'products.category_id', '=', 'categories.category_id')
                    //->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
-                   ->select('products.*', 'category.category_name')
-                   ->where('category.category_id', $category_id)
-                   ->where('products.publication_status', 1)
+                   ->select('products.*', 'categories.category_name')
+                   ->where('categories.category_id', $category_id)
+                   ->where('products.status', 'enable')
                    ->limit(10)
-                   //->paginate(2);
                    ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $product_by_category
-        ], 200);
+        return view('pages.category_by_products', compact('product_by_category'));
 
     }
 
     public function show_product_by_manufacture($manufacture_id)
     {
         $product_by_manufacture = DB::table('products')
-                   ->join('category', 'products.category_id', '=', 'category.category_id')
-                   ->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
-                   ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
-                   ->where('manufacture.manufacture_id', $manufacture_id)
-                   ->where('products.publication_status', 1)
+                   ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                   ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                   ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
+                   ->where('manufactures.manufacture_id', $manufacture_id)
+                   ->where('products.status', 'enable')
                    ->limit(18)
                    ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $product_by_manufacture,
-        ], 200);
+        return view('pages.manufacture_by_products', compact('product_by_manufacture'));
 
     }
 
     public function product_details_by_id($product_id)
     {
         $product_by_details = DB::table('products')
-                   ->join('category', 'products.category_id', '=', 'category.category_id')
-                   ->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
-                   ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
+                   ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                   ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                   ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
                    ->where('products.product_id', $product_id)
-                   ->where('products.publication_status', 1)
+                   ->where('products.status', 'enable')
                    ->first();
+
                    //->limit(18)
                    //->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $product_by_details,
-        ], 200);
+        return view('pages.product_details', compact('product_by_details'));
 
     }
 
+    public function productReview($product_id)
+    {
+       $product = Product::findOrFail($product_id);
+       $review = Review::all()->where('product_id', $product_id);
+       return view('pages.reviews.show', compact('product', 'review'));
+    }
+
+    public function wishList(Request $request)
+    {
+       $wishList = new WishList();
+       $wishList->customer_id = Session::get('customer_id');
+       $wishList->product_id = $request->product_id;
+       $wishList->save();
+
+       //return back();
+       return redirect()->back()->with('success', 'Product Added To WishList');
+
+    //    $products = DB::table('products')->where('product_id', $request->product_id)->get();
+    //    return view('pages.product_details', compact('products'));
+
+    }
+
+    public function view_wishList()
+    {
+        $products = DB::table('wish_lists')->leftJoin('products', 'wish_lists.product_id', '=', 'products.product_id')->get();
+        return view('pages.wishList', compact('products'));
+    }
+
+    public function removeWishList($id)
+    {
+        DB::table('wish_lists')->where('product_id', '=', $id)->delete();
+        return back()->with('success', 'Product Removed From WishList');
+    }
+
 }
+
+
+//// removeWishList  ///  view_wishList

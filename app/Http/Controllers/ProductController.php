@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Product;
 use JWTAuth;
 //use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests;
+use App\Manufacture;
+use App\Review;
+use Carbon\Carbon;
 use Session;
 session_start();
 
@@ -28,7 +33,7 @@ class ProductController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth.role:admin');
+        //$this->middleware('auth.role:admin');
         //$this->middleware('auth.role:admin', ['except' => ['index']]);
     }
 
@@ -37,34 +42,61 @@ class ProductController extends Controller
      *
      *
      */
+    public function all_product()
+    {
+        // $categories = Category::all();
+        // $all_manufacture_info = Manufacture::all();
+        // $products = Product::paginate(5);
+        // return view('admin.product.index', compact('categories', 'all_manufacture_info', 'products'));
 
+        $products = DB::table('products')
+                    ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                    ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                    ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
+                    //->orderBy('product_id', 'asc')
+                    ->oldest()
+                    //->latest()
+                    ->paginate(4);
+        return view('admin.product.index', compact('products'));
+    }
 
     public function index()
     {
         return $this->user = DB::table('products')
-                   ->join('category', 'products.category_id', '=', 'category.category_id')
-                   ->join('manufacture', 'products.manufacture_id', '=', 'manufacture.manufacture_id')
-                   ->select('products.*', 'category.category_name', 'manufacture.manufacture_name')
+                   ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                   ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                   ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
                    ->paginate(4);
                    //->toArray();
                    //->get();
-
     }
 
-    // public function index()
-    // {
-    //     $products = Product::with('user:id,name')
-    //         ->withCount('reviews')
-    //         ->latest()
-    //         ->paginate(20);
-    //     return response()->json(['products' => $products]);
-    // }
+    public function product_create()
+    {
+        $products = Product::all();
+        $categories = Category::all();
+        $all_manufacture_info = Manufacture::all();
+        return view('admin.product.create', compact('products', 'categories', 'all_manufacture_info'));
+    }
 
     public function show($product_id)
     {
+        $show_product = Product::findOrFail($product_id);
+        return view('admin.product.show', compact('show_product'));
+    }
+
+    public function showReview($id)
+    {
+        $product = Product::find($id);
+        $review = Review::all()->where('product_id', $id);
+        return view('pages.showReview.show', compact('product', 'review'));
+    }
+
+
+    public function show_product_by_id($product_id)
+    {
         $product = Product::findOrFail($product_id);
         return response()->json($product, 200);
-
     }
 
     // public function show(Product $product)
@@ -75,123 +107,115 @@ class ProductController extends Controller
     //     return response()->json(['product' => $product]);
     // }
 
-
     public function save_product(Request $request)
     {
-        $data = array();
-        $data['product_name'] = $request->product_name;
-        $data['user_id'] = $request->user_id;
-        $data['category_id'] = $request->category_id;
-        $data['manufacture_id'] = $request->manufacture_id;
-        $data['product_description'] = $request->product_description;
-        $data['product_price'] = $request->product_price;
-        $data['product_size'] = $request->product_size;
-        $data['product_color'] = $request->product_color;
-        $data['publication_status'] = $request->publication_status;
+        $this->validate($request, [
+            'category' => 'required',
+            'manufacture' => 'required',
+            'product_name' => 'required',
+            'product_description' => 'required',
+            'product_price' => 'required | numeric',
+            'product_image' => 'required | file',
+        ]);
 
         $image = $request->file('product_image');
-        if ($image) {
-            $image_name = str_random(20);
-            $ext = strtolower($image->getClientOriginalExtension());
-            $image_full_name = $image_name.'.'.$ext;
-            $upload_path = 'image/';
-            $image_url = $upload_path.$image_full_name;
-            $success = $image->move($upload_path, $image_full_name);
-            if ($success) {
-                $data['product_image'] = $image_url;
+        $slug = str_slug($request->name);
 
-                $dataP = DB::table('products')->insert($data);
-                return response()->json([
-                    'success' => $dataP,
-                    'product' => 'Product added successfully!',
-                ], 201);
-
+        if (isset($image))
+        {
+            $currentDate = Carbon::now()->toDateString();
+            $imagename = $slug . '-' . $currentDate . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
+            if (!file_exists('uploads/products'))
+            {
+                mkdir('uploads/products', 0777, true);
             }
+            $image->move('uploads/products', $imagename);
+        }
+        else {
+            $imagename = 'default.png';
         }
 
-        $data['product_image'] = '';
+        $data = new Product();
+        $data->product_name = $request->product_name;
+        $data->category_id = $request->category;
+        $data->manufacture_id = $request->manufacture;
+        $data->product_description = $request->product_description;
+        $data->product_price = $request->product_price;
+        $data->product_size = $request->product_size;
+        $data->product_color = $request->product_color;
+        $data->product_image = $imagename;
 
-        $dataP = DB::table('products')->insert($data);
-        return response()->json([
-            'success' => $dataP,
-            'product' => 'Product added successfully!',
-            'message' => 'Image could not be added',
-        ], 201);
+        if(isset($request->status))
+        {
+            $data->status = 'enable';
+        } else {
+            $data->status = 'disable';
+        }
+        $data->save();
+        return Redirect::to('/all-product')->with('successMsg', 'Product Saved Successfully ):');
+    }
 
+    public function edit($product_id)
+    {
+        $product_info = Product::findOrFail($product_id);
+        $categories = Category::all();
+        $all_manufacture_info = Manufacture::all();
+        return view('admin.product.edit', compact('product_info', 'categories', 'all_manufacture_info'));
     }
 
     public function update_product(Request $request, $product_id)
     {
-        $data = array();
-        $data['product_name'] = $request->product_name;
-        $data['user_id'] = $request->user_id;
-        $data['category_id'] = $request->category_id;
-        $data['manufacture_id'] = $request->manufacture_id;
-        $data['product_description'] = $request->product_description;
-        $data['product_price'] = $request->product_price;
-        $data['product_size'] = $request->product_size;
-        $data['product_color'] = $request->product_color;
-        $data['publication_status'] = $request->publication_status;
-
-        $updateP = Product::findOrFail($product_id);
-        $updateP->update($data);
-
-        return response([
-            'success' => $updateP,
-            'message' => 'Product Updated Successfully !!',
-        ]);
-
+        $product = Product::findOrFail($product_id);
+        $product->category_id = $request->category;
+        $product->manufacture_id = $request->manufacture;
+        $product->product_name = $request->product_name;
+        $product->product_description = $request->product_description;
+        $product->product_price = $request->product_price;
+        $product->product_size = $request->product_size;
+        $product->product_color = $request->product_color;
+        $product->status = $request->status;
+        if(isset($request->status))
+        {
+            $product->status = 'enable';
+        } else {
+            $product->status = 'disable';
+        }
+        $product->save();
+        return Redirect::to('/all-product')->with('successMsg', 'Product Updated Successfully ):');
     }
 
     public function delete_product($product_id)
     {
         $deleteP = Product::findOrFail($product_id);
         $deleteP->delete();
-
-        return response()->json(null, 204);
-
-        // return response([
-        //     'success' => true,
-        //     'product' => 'Product Deleted Successfully!',
-        // ]);
-
+        return Redirect::to('/all-product')->with('successMsg', 'Product Deleted Successfully ):');
     }
 
     public function unactive_product($product_id)
     {
-        $unactive_product = DB::table('products')
-            ->where('product_id', $product_id)
-            ->update(['publication_status' => 0 ]);
-
-        return response([
-            'success' => $unactive_product,
-            'product' => 'Product Unactivated Successfully!',
-        ]);
-
+        $unactive_product = Product::findOrFail($product_id);
+        $unactive_product->update(['status' => 'disable']);
+        return Redirect::to('/all-product')->with('successMsg', 'Product Un-activated Successfully ):');
     }
 
     public function active_product($product_id)
     {
-        $active_product = DB::table('products')
-            ->where('product_id', $product_id)
-            ->update(['publication_status' => 1 ]);
-
-        return response([
-            'success' => $active_product,
-            'product' => 'Product Unactivated Successfully!',
-        ]);
-
+        $active_product = Product::findOrFail($product_id);
+        $active_product->update(['status' => 'enable']);
+        return Redirect::to('/all-product')->with('successMsg', 'Product Activated Successfully ):');
     }
 
-    public function search($product_name)
+    public function search(Request $request)
     {
-        // $search = DB::table('products')
-        //         ->where("product_name", "like", "%" . $product_name . "%")
-        //         ->get();
+        $data = Product::
+                        where('product_name', 'like', '%' . $request->input('query') . '%')
+                        ->join('categories', 'products.category_id', '=', 'categories.category_id')
+                        ->join('manufactures', 'products.manufacture_id', '=', 'manufactures.manufacture_id')
+                        ->simplePaginate(2);
+                        // ->select('products.*', 'categories.category_name', 'manufactures.manufacture_name')
+                        //->get();
+        return view('pages.search', ['products' => $data]);
 
-        $search = Product::where("product_name", "like", "%" . $product_name . "%")
-                    ->get();
-        return $search;
     }
 }
 

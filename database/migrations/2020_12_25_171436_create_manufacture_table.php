@@ -13,11 +13,11 @@ class CreateManufactureTable extends Migration
      */
     public function up()
     {
-        Schema::create('manufacture', function (Blueprint $table) {
+        Schema::create('manufactures', function (Blueprint $table) {
             $table->bigIncrements('manufacture_id');
             $table->string('manufacture_name');
             $table->longText('manufacture_description');
-            $table->bigInteger('publication_status');
+            $table->string('status')->default('disable');
             $table->timestamps();
         });
     }

@@ -19,7 +19,7 @@ class CreateOrderTable extends Migration
             $table->bigInteger('shipping_id');
             $table->bigInteger('payment_id');
             $table->string('order_total');
-            $table->bigInteger('order_status');
+            $table->string('order_status')->default('pending');
             $table->timestamps();
         });
     }

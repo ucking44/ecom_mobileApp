@@ -16,7 +16,7 @@ class CreatePaymentTable extends Migration
         Schema::create('payment', function (Blueprint $table) {
             $table->bigIncrements('payment_id');
             $table->string('payment_method');
-            $table->string('payment_status');
+            $table->string('payment_status')->default('pending');
             $table->timestamps();
         });
     }

@@ -41,11 +41,11 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 Route::get('users/profile', ['uses' => 'UsersController@profile', 'as' => 'users.profile']);
 Route::get('users/block', ['uses' => 'UsersController@blockUser', 'as' => 'users.block']);
 
-Route::get('/', 'HomeController@index');
+//Route::get('/', 'HomesController@index');
 
-Route::get('/product_by_category/{category_id}', 'HomeController@show_product_by_category');
-Route::get('/product_by_manufacture/{manufacture_id}', 'HomeController@show_product_by_manufacture');
-Route::get('/view_product/{product_id}', 'HomeController@product_details_by_id');
+Route::get('/product_by_category/{category_id}', 'HomesController@show_product_by_category');
+Route::get('/product_by_manufacture/{manufacture_id}', 'HomesController@show_product_by_manufacture');
+Route::get('/view_product/{product_id}', 'HomesController@product_details_by_id');
 
 
 ////////////////////   CART ROUTE   ////////////////////////

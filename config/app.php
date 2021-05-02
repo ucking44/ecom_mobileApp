@@ -162,6 +162,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+
         //Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
         /*
@@ -228,6 +230,10 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Cart' => Gloudemans\Shoppingcart\Facades\Cart::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        'Input' => Illuminate\Support\Facades\Input::class,
+        //'Input' => Collective\Html\InputFacade::class,
         // 'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         // 'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
 

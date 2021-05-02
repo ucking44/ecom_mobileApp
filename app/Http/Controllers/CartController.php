@@ -23,38 +23,23 @@ class CartController extends Controller
         $data['price'] = $product_info->product_price;
         $data['options']['image'] = $product_info->product_image;
 
-        $dataC = Cart::add($data);
-        //return response()->json($dataC, 201);
-        return response([
-            'success' => $dataC,
-            'Product' => 'Item Added To Cart Successfully!',
-        ]);
-
+        Cart::add($data);
+        return Redirect::to('/show-cart');
     }
 
     public function show_cart()
     {
-        $all_published_category = DB::table('category')
-                                  ->where('publication_status', 1)
+        $all_published_category = DB::table('categories')
+                                  ->where('status', 'enable')
                                   ->get();
 
-        return response([
-            'success' => $all_published_category,
-            'category' => 'Showing All Category Successfully!',
-        ]);
-
+        return view('pages.add_to_cart', compact('all_published_category'));
     }
 
     public function delete_to_cart($rowId)
     {
-        $deleteC = Cart::update($rowId, 0);
-        
-        return response([
-            'success' => $deleteC,
-            'product' => 'Item Deleted Successfully!!!',
-        ]);
-
-        //return Redirect::to('/show-cart');
+        Cart::update($rowId, 0);
+        return Redirect::to('/show-cart');
         //Cart::destroy();
     }
 
@@ -63,13 +48,8 @@ class CartController extends Controller
         $qty = $request->qty;
         $rowId = $request->rowId;
         //dd($rowId);
-        $updateC = Cart::update($rowId, $qty);
-        return response([
-            'success' => $updateC,
-            'product' => 'Item Updated Successfully!!!',
-        ]);
-
-        //return Redirect::to('/show-cart');
+         Cart::update($rowId, $qty);
+        return Redirect::to('/show-cart');
         //Cart::destroy();
     }
 

@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\Review;
+use App\Category;
+use App\Manufacture;
 
 class Product extends Model
 {
@@ -13,15 +15,17 @@ class Product extends Model
     protected $primaryKey = 'product_id';
 
     protected $fillable = [
+        'category_id',
+        'manufacture_id',
         'product_name',
         'product_description',
         'product_price',
         'product_image',
         'product_size',
         'product_color',
-        'publication_status',
+        'status',
     ];
-   
+
     public $timestamps = true;
 
     /**
@@ -31,7 +35,26 @@ class Product extends Model
      */
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class, 'product_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function manufacture()
+    {
+        return $this->belongsTo(Manufacture::class);
+    }
+
+    public function recalculateRating()
+    {
+        //$reviews = $this->reviews()->notSpam()->approved();
+        $avgRating = $reviews->avg('rating');
+        $this->rating_cache = round($avgRating,1);
+        $this->rating_count = $reviews->count();
+        $this->save();
     }
 
     /**
@@ -39,10 +62,11 @@ class Product extends Model
      *
      *
      */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    // public function users()
+    // {
+    //     return $this->belongsToMany(User::class);
+    //     // return $this->belongsTo(User::class, 'user_id');
+    // }
 
 }
 

@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\Cors::class,
     ];
 
     /**
@@ -62,6 +63,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.jwt' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'auth.role' => \App\Http\Middleware\RoleAuthorization::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 
     /**

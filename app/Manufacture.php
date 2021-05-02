@@ -3,18 +3,24 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Product;
 
 class Manufacture extends Model
 {
-    protected $table = 'manufacture';
+    protected $table = 'manufactures';
 
     protected $primaryKey = 'manufacture_id';
 
     protected $fillable = [
         'manufacture_name',
         'manufacture_description',
-        'publication_status',
+        'status',
     ];
 
     public $timestamps = true;
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

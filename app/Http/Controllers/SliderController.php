@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests;
+use App\Slider;
+use Illuminate\Support\Carbon;
 use Session;
 session_start();
 
@@ -13,13 +15,22 @@ class SliderController extends Controller
 {
     public function index()
     {
-        return view('admin.add_slider');
+        $sliders = Slider::simplePaginate(4);
+        return view('admin.slider.index', compact('sliders'));
+    }
+
+    public function create()
+    {
+        return view('admin.slider.create');
     }
 
     public function save_slider(Request $request)
     {
         $data = array();
-        $data['publication_status'] = $request->publication_status;
+        $data['status'] = $request->status;
+        $data['created_at'] = Carbon::now(); //->toDateString();
+        $data['updated_at'] = Carbon::now(); //->toDateString();
+        //toDateTimeString
 
         $image = $request->file('slider_image');
         if ($image) {
@@ -32,50 +43,50 @@ class SliderController extends Controller
             if ($success) {
                 $data['slider_image'] = $image_url;
 
-                DB::table('slider')->insert($data);
+                DB::table('sliders')->insert($data);
                 Session::put('message', 'Slider Added Successfully!!');
-                return Redirect::to('/add-slider');
+                return Redirect::to('/sliders');
             }
         }
         $data['slider_image'] = '';
 
-            DB::table('slider')->insert($data);
+            DB::table('sliders')->insert($data);
                 Session::put('message', 'Slider Added Successfully Without Image!!');
-                return Redirect::to('/add-slider');
+                return Redirect::to('/sliders');
     }
 
-    public function all_slider()
-    {
-        $all_slider = DB::table('slider')->get();
-        return view('admin.all_slider', compact('all_slider'));
-    }
+    // public function all_slider()
+    // {
+    //     $all_slider = DB::table('slider')->get();
+    //     return view('admin.slider.index', compact('all_slider'));
+    // }
 
-    public function delete_slider($slider_id)
+    public function delete_slider($id)
     {
-        DB::table('slider')
-            ->where('slider_id', $slider_id)
+        DB::table('sliders')
+            ->where('id', $id)
             ->delete();
 
         Session::get('message', 'Slider Deleted successfully !!');
-        return Redirect::to('/all-slider');
+        return Redirect::to('/sliders');
     }
 
-    public function unactive_slider($slider_id)
+    public function unactive_slider($id)
     {
-        DB::table('slider')
-            ->where('slider_id', $slider_id)
-            ->update(['publication_status' => 0 ]);
+        DB::table('sliders')
+            ->where('id', $id)
+            ->update(['status' => 0 ]);
         Session::put('message', 'Slider Unactivated successfully !!');
-        return Redirect::to('/all-slider');
+        return Redirect::to('/sliders');
     }
 
-    public function active_slider($slider_id)
+    public function active_slider($id)
     {
-        DB::table('slider')
-            ->where('slider_id', $slider_id)
-            ->update(['publication_status' => 1 ]);
+        DB::table('sliders')
+            ->where('id', $id)
+            ->update(['status' => 1 ]);
         Session::put('message', 'Slider Activated successfully !!');
-        return Redirect::to('/all-slider');
+        return Redirect::to('/sliders');
     }
 
 }
