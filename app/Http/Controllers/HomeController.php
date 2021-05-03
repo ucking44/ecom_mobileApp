@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Product;
 use App\Review;
 use App\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 
 //use Illuminate\Support\Facades\Redirect;
@@ -83,13 +85,23 @@ class HomeController extends Controller
 
     public function wishList(Request $request)
     {
-       $wishList = new WishList();
-       $wishList->customer_id = Session::get('customer_id');
-       $wishList->product_id = $request->product_id;
-       $wishList->save();
+        // $this->validate($request, [
+        //     'customer_name' => 'required',
+        // ]);
+        // $customer_name = $request->customer_name;
+        // $customer_id = $request->customer_id;
+        // $customer_id = DB::table('customer')
+        //                         ->where('customer_name', $customer_name)
+        //                         ->where('customer_id', $customer_id)
+        //                         ->get();
 
-       //return back();
-       return redirect()->back()->with('success', 'Product Added To WishList');
+        $wishList = new WishList();
+        $wishList->customer_id = Session::get('customer_id');
+        $wishList->product_id = $request->product_id;
+        // $wishList->customer()->associate($customer_id);
+        $wishList->save();
+
+        return redirect()->back()->with('success', 'Product Added To WishList');
 
     //    $products = DB::table('products')->where('product_id', $request->product_id)->get();
     //    return view('pages.product_details', compact('products'));
@@ -111,4 +123,3 @@ class HomeController extends Controller
 }
 
 
-//// removeWishList  ///  view_wishList

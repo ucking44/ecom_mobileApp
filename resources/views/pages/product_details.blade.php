@@ -40,9 +40,9 @@
                 <p><b>Category:</b> {{ $product_by_details->category_name }} </p>
                 <p><b>Size:</b> {{ $product_by_details->product_size }} </p>
 
-                
+
                 <?php
-                    $customer_id = Session::get('customer_name');
+                    $customer_id = Session::get('customer_id');
                     //wishlist Code start
                     // if(Auth::check()){
                     // if (Session::get('customer_id')){

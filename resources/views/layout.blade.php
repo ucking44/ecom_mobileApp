@@ -141,12 +141,13 @@
                         {{-- {{ Session::get('customer_id') }} --}}
 						<div class="shop-menu clearfix pull-right">
 							<ul class="nav navbar-nav">
-								<li><a href="#"><i class="fa fa-user"></i> {{ session()->get('customer_name') }}</a></li>
-								<?php $customer_id = Session::get('customer_name');
+								{{-- <li><a href="#"><i class="fa fa-user"></i> {{ session()->get('customer_name') }}</a></li> --}}
+                                <li><a href="#"><i class="fa fa-user"></i> Profile </a></li>
+								<?php $customer_id = Session::get('customer_id');
 								      $shipping_id = Session::get('shipping_id');
 								?>
                                 <?php if ($customer_id != NULL) { ?>
-                                <li><a href="{{ url('/wishList') }}"><i class="fa fa-star"></i>Wishlist<span style="color: green; font-weight: bold"> ({{ App\WishList::count() }})</span></a></li>
+                                <li><a href="{{ url('/wishList') }}"><i class="fa fa-star"></i>Wishlist<span style="color: orange; font-weight: bold"> ({{ App\WishList::count() }})</span></a></li>
 								<?php } if ($customer_id != NULL && $shipping_id == NULL) { ?>
 								    <li><a href="{{ URL::to('/checkout') }}"><i class="fa fa-crosshairs"></i> Checkout</a></li>
 								<?php } if ($customer_id != NULL && $shipping_id != NULL) { ?>
@@ -158,7 +159,7 @@
 
 								    <li><a href="{{ URL::to('/show-cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
 
-								<?php $customer_id = Session::get('customer_name'); ?>
+								<?php $customer_id = Session::get('customer_id'); ?>
 								<?php if ($customer_id != NULL) { ?>
 
 								    <li><a href="{{ URL::to('/customer_logout') }}"><i class="fa fa-lock"></i> Logout</a></li>

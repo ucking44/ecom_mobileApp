@@ -76,8 +76,8 @@ class CheckoutController extends Controller
                   ->first();
 
             if ($result) {
-                //Session::put('customer_id', $result->customer_id);
-                Session::put('customer_name', $result->customer_name);
+                Session::put('customer_id', $result->customer_id, 'customer_name', $result->customer_name);
+                //Session::put('customer_name', $result->customer_name);
                 return Redirect::to('/checkout');
             }
             else {
