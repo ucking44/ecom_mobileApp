@@ -74,7 +74,8 @@ class ProductController extends Controller
     public function product_create()
     {
         $products = Product::all();
-        $categories = Category::all();
+        //$categories = Category::all();
+        $categories = Category::pluck('category_name', 'category_id');
         $all_manufacture_info = Manufacture::all();
         return view('admin.product.create', compact('products', 'categories', 'all_manufacture_info'));
     }
@@ -115,6 +116,7 @@ class ProductController extends Controller
             'product_name' => 'required',
             'product_description' => 'required',
             'product_price' => 'required | numeric',
+            'stock' => 'required',
             'product_image' => 'required | file',
         ]);
 
@@ -141,6 +143,7 @@ class ProductController extends Controller
         $data->manufacture_id = $request->manufacture;
         $data->product_description = $request->product_description;
         $data->product_price = $request->product_price;
+        $data->stock = $request->stock;
         $data->product_size = $request->product_size;
         $data->product_color = $request->product_color;
         $data->product_image = $imagename;
@@ -171,6 +174,7 @@ class ProductController extends Controller
         $product->product_name = $request->product_name;
         $product->product_description = $request->product_description;
         $product->product_price = $request->product_price;
+        $product->stock = $request->stock;
         $product->product_size = $request->product_size;
         $product->product_color = $request->product_color;
         $product->status = $request->status;

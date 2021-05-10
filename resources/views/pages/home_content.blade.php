@@ -16,9 +16,22 @@
 										</div>
 										<div class="product-overlay">
 											<div class="overlay-content">
-												<h2>{{ $v_published_product->product_price }} NGN</h2>
-												<a href="{{ URL::to('/view_product/'. $v_published_product->product_id) }}"><p>{{ $v_published_product->product_name }}</p></a>
-												<a href="{{ URL::to('/view_product/'. $v_published_product->product_id) }}" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                                <form action="{{ url('/add-to-cart') }}" method="POST">
+                                                    {{-- {{ csrf_field() }} --}}
+                                                    @csrf
+                                                    <input name="qty" type="hidden" value="1" />
+                                                    <input type="hidden" name="product_id" value="{{ $v_published_product->product_id }}">
+                                                    <h2>{{ $v_published_product->product_price }} NGN</h2>
+                                                    <input type="hidden" name="product_price" value="{{ $v_published_product->product_price }}">
+                                                    <a href=""><p>{{ $v_published_product->product_name }}</p>
+                                                    <input type="hidden" name="product_name" value="{{ $v_published_product->product_name }}">
+                                                    <button type="submit" class="btn btn-fefault add-to-cart">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                        Add to cart
+                                                    </button>
+                                                    {{-- <a href="{{ URL::to('/view_product/'. $v_published_product->product_id) }}"><p>{{ $v_published_product->product_name }}</p></a>
+                                                    <a href="{{ URL::to('/view_product/'. $v_published_product->product_id) }}" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a> --}}
+                                                </form>
 											</div>
 										</div>
 								</div>

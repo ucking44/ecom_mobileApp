@@ -21,10 +21,12 @@ class CartController extends Controller
         $data['id'] = $product_info->product_id;
         $data['name'] = $product_info->product_name;
         $data['price'] = $product_info->product_price;
+        $data['stock'] = $product_info->stock;
         $data['options']['image'] = $product_info->product_image;
 
         Cart::add($data);
-        return Redirect::to('/show-cart');
+        return back();
+        //return Redirect::to('/show-cart');
     }
 
     public function show_cart()

@@ -17,6 +17,8 @@ class CreateOrderDetailsTable extends Migration
             $table->bigIncrements('order_details_id');
             $table->bigInteger('order_id');
             $table->bigInteger('product_id');
+            $table->unsignedBigInteger('tax');
+            $table->unsignedBigInteger('total');
             $table->string('product_name');
             $table->string('product_price');
             $table->string('product_sales_quantity');

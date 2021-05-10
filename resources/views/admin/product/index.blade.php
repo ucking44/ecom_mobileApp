@@ -57,6 +57,7 @@
                                             <th>Product</th>
                                             {{-- <th>Description</th> --}}
                                             <th>Product Price</th>
+                                            <th>Stock</th>
                                             <th>Image</th>
                                             {{-- <th>Product Size</th>
                                             <th>Product Color</th> --}}
@@ -76,6 +77,7 @@
                                                 <td>{{ $v_product->product_name }}</td>
                                                 {{-- <td>{{ $v_product->product_description }}</td> --}}
                                                 <td><span>&#8358;</span>{{ number_format($v_product->product_price, 2) }}</td>
+                                                <td>{{ $v_product->stock }}</td>
                                                 <td>
                                                     <img class="img-responsive img-thumbnail" src="{{ asset('uploads/products/' .  $v_product->product_image) }}" style="height: 80px; width: 80px" alt="">
                                                 </td>

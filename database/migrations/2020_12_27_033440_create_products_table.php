@@ -22,6 +22,7 @@ class CreateProductsTable extends Migration
             $table->longText('product_description');
             //$table->float('product_price');
             $table->double('product_price', 14, 2);
+            $table->unsignedBigInteger('stock');
             $table->string('product_image');
             $table->string('product_size');
             $table->string('product_color');

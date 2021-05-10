@@ -157,7 +157,7 @@
 									<li><a href="{{ URL::to('/login-check') }}"> Checkout</a></li>
 								<?php } ?>
 
-								    <li><a href="{{ URL::to('/show-cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+								    <li><a href="{{ URL::to('/show-cart') }}"><i class="fa fa-shopping-cart"></i>&nbsp; Cart &nbsp;({{ Cart::count() }} Items)&nbsp; (<span>&#8358;</span>{{ Cart::total() }})</a></li>
 
 								<?php $customer_id = Session::get('customer_id'); ?>
 								<?php if ($customer_id != NULL) { ?>

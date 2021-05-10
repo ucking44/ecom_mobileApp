@@ -40,7 +40,7 @@
                         <div class="card-body">
                             <form action="{{ URL::to('save-product') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Category</label>
@@ -48,6 +48,20 @@
                                                 <option>Select Category</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div> --}}
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating">Category</label>
+                                            <select class="form-control" name="category">
+                                                <option>Select Category</option>
+                                                @foreach ($categories as $id => $category)
+                                                    <option value="{{ $id }}">{{ $category }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -72,7 +86,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Product Name</label>
-                                            <input type="text" class="form-control" name="product_name" required="">
+                                            <input type="text" class="form-control" name="product_name" placeholder="Product Name" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +95,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Description</label>
-                                            <textarea type="text" class="form-control" rows="3" name="product_description" required=""></textarea>
+                                            <textarea type="text" class="form-control" rows="3" name="product_description" placeholder="Description" required=""></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +104,16 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Product Price</label>
-                                            <input type="number"  class="form-control" name="product_price" required="">
+                                            <input type="number"  class="form-control" name="product_price" placeholder="Product Price" required="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating">Stock</label>
+                                            <input type="number"  class="form-control" name="stock" placeholder="Stock" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +129,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Product Size</label>
-                                            <input type="text" class="form-control" name="product_size" required="">
+                                            <input type="text" class="form-control" name="product_size" placeholder="Product Size" required="">
                                         </div>
                                     </div>
                                 </div>
@@ -115,7 +138,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Product Color</label>
-                                            <input type="text" class="form-control" name="product_color" required="">
+                                            <input type="text" class="form-control" name="product_color" placeholder="Product Color" required="">
                                         </div>
                                     </div>
                                 </div>

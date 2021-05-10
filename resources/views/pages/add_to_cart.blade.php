@@ -36,22 +36,23 @@
                             <p>Web ID: 1089772</p>
                         </td>
                         <td class="cart_price">
-                            <p>{{ $v_contents->price }}</p>
+                            <p>{{ number_format($v_contents->price, 2) }}</p>
+                            {{-- <td><span>&#8358;</span>{{ number_format($v_product->product_price, 2) }}</td> --}}
                         </td>
                         <td class="cart_quantity">
                             <div class="cart_quantity_button">
                                 <form action="{{ url('/update-cart') }}" method="POST">
                                     @csrf
-                                    <input class="cart_quantity_input" type="text" name="qty" value="{{ $v_contents->qty }}" autocomplete="off" size="2">
+                                    <input class="cart_quantity_input" type="number" name="qty" value="{{ $v_contents->qty }}" autocomplete="off" size="3">&nbsp;
                                     {{-- <a class="cart_quantity_up" href=""> + </a> --}}
                                     <input type="hidden" name="rowId" value="{{ $v_contents->rowId }}">
                                     {{-- <a class="cart_quantity_down" href=""> - </a> --}}
-                                    <input class="btn btn-sm btn-default" type="submit" name="submit" value="update">
+                                    <input class="btn btn-sm btn-warning" type="submit" name="submit" value="update">
                                 </form>
                             </div>
                         </td>
                         <td class="cart_total">
-                            <p class="cart_total_price">{{ $v_contents->total }}</p>
+                            <p class="cart_total_price"><span>&#8358;</span>{{ number_format($v_contents->total, 2) }}</p>
                         </td>
                         <td class="cart_delete">
                             <a class="cart_quantity_delete" href="{{ URL::to('/delete-to-cart/'. $v_contents->rowId) }}"><i class="fa fa-times"></i></a>
@@ -136,7 +137,7 @@
                         <a class="btn btn-default update" href="">Update</a><br/>
                         <?php $customer_id = Session::get('customer_id'); ?>
                         <?php if ($customer_id != NULL) { ?>
-                            <li><a href="{{ URL::to('/checkout') }}"><i class="fbtn btn-default">Check Out</i></a></li>
+                            <li><a href="{{ URL::to('/checkout') }}"><i class="btn btn-default check_out">Check Out</i></a></li>
                         <?php } else { ?>
                             <li><a class="btn btn-default check_out" href="{{ URL::to('/login-check') }}">Check Out</a></li>
                             {{-- <li><a href="{{ URL::to('/login-check') }}"><i class="fa fa-crosshairs"></i> Checkout</a></li> --}}

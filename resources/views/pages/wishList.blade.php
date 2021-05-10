@@ -161,7 +161,7 @@
                         } else { ?> WishList Item <?php } ?> </h2>
 
                     <?php if ($products->isEmpty()) { ?>
-                        <h4>Sorry, No Product Was found In WishList !</h4>
+                        <h4>Sorry, No Product Was Found In WishList !</h4>
 <?php } else { ?>
                         @foreach($products as $product)
                         <div class="col-sm-4">

@@ -45,7 +45,7 @@
                                                 <option>Select Category</option>
                                                 @foreach($categories as $category)
                                                     <option {{ $category->category_id == $product_info->category_id ? 'selected' : '' }} value="{{ $category->category_id }}">{{ $category->category_name }}</option>
-                                                @endforeach  
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -87,7 +87,16 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="bmd-label-floating">Product Price</label>
-                                            <input type="text" class="form-control" name="product_price" value="{{ $product_info->product_price }}">
+                                            <input type="number" class="form-control" name="product_price" value="{{ $product_info->product_price }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating">Stock</label>
+                                            <input type="number" class="form-control" name="stock" value="{{ $product_info->stock }}">
                                         </div>
                                     </div>
                                 </div>
@@ -125,7 +134,7 @@
                                       <input type="checkbox" name="status" id="status" {{ $interestRate->status == "enable" ? 'checked' : '' }} >
                                     </div>
                                 </div> --}}
-                                
+
 
                                 <div class="row">
                                     <div class="col-md-12">
